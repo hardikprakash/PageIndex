@@ -147,13 +147,22 @@ You can follow these steps to generate a PageIndex tree from a PDF document.
 pip3 install --upgrade -r requirements.txt
 ```
 
-### 2. Set your OpenAI API key
+### 2. Set your API key
 
-Create a `.env` file in the root directory and add your API key:
+Create a `.env` file in the root directory and add your API key.
 
+**OpenAI (default base URL: `https://api.openai.com/v1`):**
 ```bash
-CHATGPT_API_KEY=your_openai_key_here
+OPENAI_API_KEY=your_openai_key_here
 ```
+
+**[OpenRouter](https://openrouter.ai) or any OpenAI-compatible provider:**
+```bash
+OPENAI_API_KEY=your_key_here
+OPENAI_BASE_URL=https://openrouter.ai/api/v1   # defaults to this if not set
+```
+
+> If neither `OPENAI_API_KEY` nor `OPENAI_BASE_URL` are set, the legacy `CHATGPT_API_KEY` variable is also accepted for backwards compatibility. The base URL defaults to `https://openrouter.ai/api/v1`.
 
 ### 3. Run PageIndex on your PDF
 
@@ -167,7 +176,9 @@ python3 run_pageindex.py --pdf_path /path/to/your/document.pdf
 You can customize the processing with additional optional arguments:
 
 ```
---model                 OpenAI model to use (default: gpt-4o-2024-11-20)
+--model                 Model to use (default: gpt-4o-2024-11-20)
+--base-url              LLM API base URL (default: OPENAI_BASE_URL env var, or https://openrouter.ai/api/v1)
+--api-key               LLM API key (default: OPENAI_API_KEY or CHATGPT_API_KEY env var)
 --toc-check-pages       Pages to check for table of contents (default: 20)
 --max-pages-per-node    Max pages per node (default: 10)
 --max-tokens-per-node   Max tokens per node (default: 20000)

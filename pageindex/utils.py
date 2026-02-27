@@ -18,6 +18,7 @@ from pathlib import Path
 from types import SimpleNamespace as config
 
 CHATGPT_API_KEY = os.getenv("CHATGPT_API_KEY")
+OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", "https://openrouter.ai/api/v1")
 
 def count_tokens(text, model=None):
     if not text:
@@ -26,9 +27,13 @@ def count_tokens(text, model=None):
     tokens = enc.encode(text)
     return len(tokens)
 
-def ChatGPT_API_with_finish_reason(model, prompt, api_key=CHATGPT_API_KEY, chat_history=None):
+def ChatGPT_API_with_finish_reason(model, prompt, api_key=None, base_url=None, chat_history=None):
+    if api_key is None:
+        api_key = os.getenv("OPENAI_API_KEY") or os.getenv("CHATGPT_API_KEY")
+    if base_url is None:
+        base_url = os.getenv("OPENAI_BASE_URL", "https://openrouter.ai/api/v1")
     max_retries = 10
-    client = openai.OpenAI(api_key=api_key)
+    client = openai.OpenAI(api_key=api_key, base_url=base_url)
     for i in range(max_retries):
         try:
             if chat_history:
@@ -58,9 +63,13 @@ def ChatGPT_API_with_finish_reason(model, prompt, api_key=CHATGPT_API_KEY, chat_
 
 
 
-def ChatGPT_API(model, prompt, api_key=CHATGPT_API_KEY, chat_history=None):
+def ChatGPT_API(model, prompt, api_key=None, base_url=None, chat_history=None):
+    if api_key is None:
+        api_key = os.getenv("OPENAI_API_KEY") or os.getenv("CHATGPT_API_KEY")
+    if base_url is None:
+        base_url = os.getenv("OPENAI_BASE_URL", "https://openrouter.ai/api/v1")
     max_retries = 10
-    client = openai.OpenAI(api_key=api_key)
+    client = openai.OpenAI(api_key=api_key, base_url=base_url)
     for i in range(max_retries):
         try:
             if chat_history:
@@ -86,12 +95,16 @@ def ChatGPT_API(model, prompt, api_key=CHATGPT_API_KEY, chat_history=None):
                 return "Error"
             
 
-async def ChatGPT_API_async(model, prompt, api_key=CHATGPT_API_KEY):
+async def ChatGPT_API_async(model, prompt, api_key=None, base_url=None):
+    if api_key is None:
+        api_key = os.getenv("OPENAI_API_KEY") or os.getenv("CHATGPT_API_KEY")
+    if base_url is None:
+        base_url = os.getenv("OPENAI_BASE_URL", "https://openrouter.ai/api/v1")
     max_retries = 10
     messages = [{"role": "user", "content": prompt}]
     for i in range(max_retries):
         try:
-            async with openai.AsyncOpenAI(api_key=api_key) as client:
+            async with openai.AsyncOpenAI(api_key=api_key, base_url=base_url) as client:
                 response = await client.chat.completions.create(
                     model=model,
                     messages=messages,
